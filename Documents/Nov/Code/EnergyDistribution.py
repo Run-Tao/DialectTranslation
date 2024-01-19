@@ -4,6 +4,8 @@ import librosa
 import librosa.display
 import matplotlib.pyplot as plt
 import math
+import numpy as np
+from Data import Constant_Data
 
 # matplotlib for chinese
 plt.rcParams['font.sans-serif'] = ['SimHei']
@@ -21,8 +23,8 @@ with open(data_path+'/order.txt', 'r', encoding='utf-8') as f:
     labels = f.readlines()
     for i in range(len(labels)):
         labels[i] = labels[i].strip('\n')
-for i in range(1, 100):
-    audio_file = data_path + f'/mandarin/audio/GeneratedByAI/mandarin_{i-1}_AI.wav'
+for i in range(Constant_Data.DataLength):
+    audio_file = data_path + f'/mandarin/audio/GeneratedByAI/mandarin_{i}_AI.wav'
     energy, label = generate_energy_distribution(audio_file, labels[i - 1])
     energy_data.append((energy, label))
 num_images = len(energy_data)
@@ -41,3 +43,12 @@ plt.tight_layout(rect=[0, 0.01, 1, 0.95])
 plt.suptitle('能量分布')
 plt.savefig(data_path+'/mandarin/energy_distribution_AI.png')
 plt.show()
+
+save_path = os.path.join(data_path, 'mandarin', 'energy_data')
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+
+# 保存energy_data
+for (energy, label) in energy_data:
+    save_file = os.path.join(save_path, f'{label}_energy_distribution.npy')
+    np.save(save_file, energy)
