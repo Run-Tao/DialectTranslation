@@ -11,8 +11,8 @@ def load_energy_distribution(path):
 
 
 # This function is used to find out how many peaks there are in the energy distribution curve of an audio clip. And the result will be used in calculating how much words are there in a certain audio clip.
-# Why gap == 3 ? - Because of the accuracy.
-def find_peaks(data_array, gap=3):
+# Why gap == 3 ? Because of the accuracy. When gap == 3 or 4 , the accuracy is 85%; when gap == 2, the accuracy is 81%. And when gap is 4, the complete accuracy is lower than the rate when gap == 3.
+def find_peaks(data_array, gap=2):
     peak_counters = 0
     peak_array = []
     for k in range(len(data_array)):
