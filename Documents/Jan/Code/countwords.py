@@ -1,5 +1,5 @@
 import numpy as np
-from Data import Constant_Data
+from DT_pkgs import Constant_Data
 import matplotlib.pyplot as plt
 import os
 from collections import Counter
@@ -12,12 +12,12 @@ def load_energy_distribution(path):
 
 # This function is used to find out how many peaks there are in the energy distribution curve of an audio clip. And the result will be used in calculating how much words are there in a certain audio clip.
 # Why gap == 3 ? Because of the accuracy. When gap == 3 or 4 , the accuracy is 85%; when gap == 2, the accuracy is 81%. And when gap is 4, the complete accuracy is lower than the rate when gap == 3.
-def find_peaks(data_array, gap=2):
+def find_peaks(data_array, gap=3):
     peak_counters = 0
     peak_array = []
     for k in range(len(data_array)):
         start = max(0, k - gap)
-        end = min(len(data_array), k + gap)
+        end = min(len(data_array)-1, k + gap)
         if data_array[k] == max(data_array[start:end]) and data_array[k] != 0 and data_array[k] != min(data_array[start:end]):
             peak_counters += 1
             peak_array.append(data_array[k])

@@ -1,6 +1,6 @@
 import pyttsx3
 import os
-from Data import Constant_Data
+from DT_pkgs import Constant_Data
 
 data_path = "D:\\Taoli\\Projects\\DialectTranslation\\Data\\"
 with open(data_path+'order.txt', 'r', encoding='utf-8') as f:
