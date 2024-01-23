@@ -7,6 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 import string
 import re
 
+
 # 创建自定义数据集类
 class CustomDataset(Dataset):
     def __init__(self, data_folder, label_file, max_data_index=3278):

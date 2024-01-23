@@ -1,5 +1,5 @@
 import numpy as np
-from DT_pkgs import Constant_Data
+import DT_pkgs
 import matplotlib.pyplot as plt
 import os
 from collections import Counter
@@ -28,26 +28,26 @@ def find_peaks(data_array, gap=3):
 # print(Constant_Data.DataLength)
 
 
-order_path = os.path.join(Constant_Data.data_path, "order.txt")
+order_path = os.path.join(DT_pkgs.data_path, "order.txt")
 energy_data = []
 
 with open(order_path, 'r', encoding='utf-8') as f:
     orders = f.readlines()
-    for i in range(Constant_Data.DataLength):
+    for i in range(DT_pkgs.DataLength):
         orders[i] = orders[i].strip('\n')
 np_data_path = r"mandarin\energy_data"
-for i in range(Constant_Data.DataLength):
+for i in range(DT_pkgs.DataLength):
     file_name = f"{orders[i]}_energy_distribution.npy"
-    file_path = os.path.join(Constant_Data.data_path, np_data_path, file_name)
+    file_path = os.path.join(DT_pkgs.data_path, np_data_path, file_name)
     energy_data.append(load_energy_distribution(file_path))
-for i in range(Constant_Data.DataLength):
+for i in range(DT_pkgs.DataLength):
     print(orders[i], find_peaks(energy_data[i][0])[0], len(orders[i]))
-orders_length = [len(orders[i]) for i in range(Constant_Data.DataLength)]
-predict_length = [find_peaks(energy_data[i][0])[0] for i in range(Constant_Data.DataLength)]
+orders_length = [len(orders[i]) for i in range(DT_pkgs.DataLength)]
+predict_length = [find_peaks(energy_data[i][0])[0] for i in range(DT_pkgs.DataLength)]
 
 errors = [abs(true - pred) for true, pred in zip(orders_length, predict_length)]
 
-x = np.arange(Constant_Data.DataLength)
+x = np.arange(DT_pkgs.DataLength)
 
 # 创建误差图
 plt.errorbar(x, orders_length, yerr=errors, fmt='o', color='b', ecolor='r', linestyle='-', linewidth=2, capsize=5, capthick=2)
