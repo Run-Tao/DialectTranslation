@@ -1,11 +1,9 @@
-import os
+import re
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-import string
-import re
 
 
 # 创建自定义数据集类
@@ -71,11 +69,14 @@ output_size = 40  # 假设有10个类别
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 创建MLP模型实例，并将其移动到GPU
+# model = MLPModel(input_size, hidden_size_1, hidden_size_2, hidden_size_3, hidden_size_4, output_size).to(device)
+model_save_path = 'D:/TaoLi/Projects/DialectTranslation/Documents/Jan/Code/my_model.pth'
 model = MLPModel(input_size, hidden_size_1, hidden_size_2, hidden_size_3, hidden_size_4, output_size).to(device)
+model.load_state_dict(torch.load(model_save_path))
 
 # 定义损失函数和优化器
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # 数据加载器和训练循环
 batch_size = 32
@@ -85,7 +86,7 @@ num_epochs = 100
 epoch = 0
 flag = False
 
-while flag == False:
+while flag is False:
     model.train()
     running_loss = 0.0
     for i, data in enumerate(train_loader, 0):
@@ -100,7 +101,7 @@ while flag == False:
         running_loss += loss.item()
         if i % 100 == 99:  # 每100个mini-batches输出一次
             print(f'Epoch {epoch + 1}, Batch {i + 1}, Loss: {running_loss / 100}')
-            if running_loss / 100 <= 1:
+            if running_loss / 100 <= 0.5:
                 flag = True
             running_loss = 0.0
             epoch = epoch + 1
@@ -108,7 +109,6 @@ while flag == False:
 print('Finished Training')
 
 # 保存模型到指定路径
-model_save_path = 'D:/TaoLi/Projects/DialectTranslation/Documents/Jan/Code/my_model.pth'
 torch.save(model.state_dict(), model_save_path)
 
 # 加载已训练好的模型并进行推理
