@@ -1,11 +1,14 @@
 \documentclass[lang=cn]{elegantpaper}
-\usepackage{bm}
+\usepackage{bm,appendix}
 \title{低成本普惠型智能家居方言指令转换器的研究}
 \author{陶理}
 \begin{document}
 \maketitle
 \begin{abstract}
 \end{abstract}
+\begin{center}
+    \tableofcontents
+\end{center}
 \setcounter{section}{-1}
 \section{引言}
 随着普通话的推广，为了更好地与各族人民交流，方言的盛行注定会成为过去时。不过，各地迥异的方言是中华民族传承千年的瑰宝。以吴语为例：现如今普通话已经只剩下四个声调，即所谓的阴平、阳平、上声、去声，但是在古汉语中还有一个声调为入声，在古诗文的韵律中时常出现；如在浙江义乌话中，声调达到了10个。因为有入声，所以使用方言阅读古诗文能够接近古人在创作时的读音，相较于普通话更有韵味。若此般瑰宝失传，则是中华民族乃至世界的重大文化损失。
@@ -29,11 +32,41 @@
 
 前人的研究受限于使用的深度学习或机器学习算法对于数据量的要求，需要花费大量时间用于收集方言语音数据。本研究旨在通过小数据量的方言数据，构建方言语音指令转换器，利用梅尔频率倒谱系数(MFCCs)等特征值提取方式，对于方言指令音频数据建立特征向量，并通过数学模型提取目标方言和普通话的向量之间的映射关系。
 
+\section{智能家居语音指令数据库}
+构建的智能家居语音指令数据库包含了不同语速的普通话、沪语、粤语、四川方言和浙江义乌方言智能家居语音指令的音频数据
+\subsection{语音指令文本设计}
+
+将智能家居的语音指令按照不同的智能家具进行划分，按照各家具分配的指令数量如表\ref{tab:1}所示。
+\begin{table}[htbp]
+    \caption{表\label{tab:1} 智能家居语音指令数据库语音指令分配}\
+    \begin{center}
+        \begin{tabular}{ccc}
+            \hline
+            \textbf{智能家具} & \textbf{指令数量} & \textbf{例子} \\
+            \hline \hline
+            \textit{空调} & 30 & 打开空调 \\
+            \textit{照明} & 25 & 开灯 \\
+            \textit{电视} & 18 & 打开电视、调低电视音量 \\
+            \textit{电风扇} & 15 & 电风扇调到三档风 \\
+            \textit{洗衣机} & 10 & 洗衣机开始工作 \\
+            \textit{摄像头} & 8 & 查看门口摄像头画面 \\
+            \textit{音响} & 3 & 播放\\
+            \hline
+        \end{tabular}
+    \end{center}
+\end{table}
+
+各家具的指令覆盖了大部分可能出现的需求，具体可以参见附录A。
+
+\subsection{语音数据增强}
+由于方言数据量少，而且质量不高，所以需要对语音数据进行增强，增加数据集容量，提高识别精度。
+对原数据在语速、语调、音调、音量等方面进行增强，获得更多样的数据集，能够解决数据量少的问题，如图所示。
+
 \section{语音识别方法}
 \subsection{音频特征提取算法}
 常用的音频特征提取算法有傅里叶变换、短时傅里叶变换、梅尔频率倒谱系数、小波变换等。通过合理的算法选择，能够提升特征值的有效性，进而使识别更精准。
 
-梅尔频率倒谱系数，(Mel-Scale Frequency Cepstral Coefficients, MFCCs)是一种在语音识别领域中运用的最为广泛的特征提取算法之一。由于人耳的生理构造，其对频率的感知并非是线性的，因而使用Mel刻度对其进行修正，使得音频数据符合人耳所听见的声音。
+梅尔频率倒谱系数，(Mel-Scale Frequency Cepstral Coefficients, MFCCs)是一种在语音识别领域中运用的最为广泛的特征提取算法之一。MFCC的提取过程模仿了人耳由于生理构造而具有的听觉特性，特别是对不同频率的声音的感知方式。人耳对频率的感知是非线性的，即对低频声音的分辨能力比高频声音要好。因此，MFCC特征的提取过程包括将频率转换到一个称为梅尔刻度（Mel scale）的尺度上，该尺度更接近人类的听觉感知。
 
 \begin{equation}
     m = Mel(f) = 2595 \log_{10}(1+f/700)
@@ -54,14 +87,30 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 加窗的目的为消除边界干扰，即对输入信号进行窗函数处理，如Hanning窗或Rectangular窗等，消除频谱泄露的效应。
 
 \begin{equation}
-    x_w(n) = x'(n) \cdot H(n)
-\end{equation}
-\begin{equation}
-    H(n) = 0.54 - 0.46 \cos \left( \frac{2\pi n}{N-1} \right)
+    x_w(n) = x'(n) \cdot w(n)
 \end{equation}
 
-本研究中使用了受到广泛认可的Hanning窗，相对于其他窗函数，Hanning窗具有更好的频谱主瓣宽度和边界衰减，而且计算更为简便
-\section{语音数据库}
+其中，$w(n)$为窗函数，一般有矩形窗、海明（Hamming）窗、汉宁（Hanning）窗等。本研究中使用了受到广泛认可的Hamming窗，相对于其他窗函数，Hanning窗具有更好的频谱主瓣宽度和边界衰减，而且计算更为简便。
+\begin{equation}
+    w(n) = H(n) = 0.54 - 0.46 \cos \left( \frac{2\pi n}{N-1} \right)
+\end{equation}
+
+短时傅里叶变换（Short-Time Fourier Transform, STFT）的原理是将语音信号转换为频率谱，它是通过对信号的离散傅里叶变换来实现的。通过将语音信号进行短时傅里叶变换后，可以同时得到频域和时域的信息。
+\begin{equation}
+    X(m, \omega) = \sum_{n=-\infty}^{\infty} x(n) \cdot w(n-m) \cdot e^{-j\omega n}
+\end{equation}
+
+离散余弦变换（Discrete Cosine Transform, DCT）在MFCCs的计算中将通过Mel滤波器后的信号转化为最后的向量形式。
+\begin{equation}
+    f_m = \sum_{k=0}^{n-1} x_k \cos [\frac{\pi}{n}m(k+\frac{1}{2})]
+\end{equation}
+
+本研究使用MFCCs对每条进行语音数据的特征提取，用于语音识别的声学模型中。
+\subsection{主成分分析}
+
+形成特征向量$\bm{v} = (\bm{f}_1, \bm{f}_2, \ldots, \bm{f}_M)$，
+\section{}
+
 \begin{equation}
     g(t)=\frac{4A_{\max}}{\pi}\sum_{n=1}^{\infty}\frac{\sin((2n-1)\omega t)}{2n-1}
 \end{equation}
@@ -75,4 +124,8 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 \end{equation}
 STFT：
 MFCCs过程：
+
+\section{参考文献}
+\appendix
+\section[A]{语音指令文本}
 \end{document}
