@@ -2,9 +2,52 @@
 
 \title{三月份过程性研究记录}
 \author{陶理}
-
+\usepackage{listings}
 \begin{document}
-
+\date{March 28, 2024}
 \maketitle
+\begin{abstract}
+该份过程性研究记录（截止至撰写日期）主要记录了作者在寒假以及三月份所完成的研究成果。主要有以下几项：
+\begin{enumerate}
+    \item 原定研究计划：
+    \begin{enumerate}
+        \item 对于方言数据进行收集
+        \item 对于收集到的方言数据提取
+        \item 采用可视化的方式从多维度考量所获得的mfcc的特征
+        \item 采用机器学习算法小样本量地训练（但是效果不好）
+    \end{enumerate}
+    \item 新思路：
+    \begin{enumerate}
+        \item 可以采用拓扑学，将所获得的数据映射到一个几何图案（大概率多维），然后再通过不同图形之间的映射转化解决问题（还在设想中，具体可见3Blue1Brown的视频以及四月份的过程性研究记录，届时应该能解释清楚并探讨可行性）
+    \end{enumerate}
+\end{enumerate}
+\end{abstract}
+\section{数据程序成果（部分）}
+\begin{lstlisting}[language=Python]
+import os
+import soundfile as sf
+import librosa
+import numpy as np
+import matplotlib.pyplot as plt
+input_folder = r'D:\TaoLi\Projects\DialectTranslation\Data\mandarin\audio\GeneratedByAI'
+output_folder = r'D:\TaoLi\Projects\DialectTranslation\Data\mandarin\MFCC'
+for i in range(100):
+    file_name = f"mandarin_{i}_AI.wav"
+    input_file_path = os.path.join(input_folder, file_name)         
+    data, sample_rate = librosa.load(input_file_path)
+    mfccs = librosa.feature.mfcc(y=data, sr=sample_rate, n_mfcc=13)
+    output_file_path = os.path.join(output_folder, f"mfcc_{i}.npy")
+    # np.save(output_file_path, mfccs)
+    print(f"MFCC for {file_name} saved to {output_file_path}")
+    plt.figure(figsize=(10, 4))
+    librosa.display.specshow(mfccs, x_axis='time')
+    plt.colorbar()
+    plt.title(f'MFCC for {file_name}')
+    plt.tight_layout()
+    output_image_path = os.path.join(output_folder, f"mfcc_{i}.png")
+    plt.savefig(output_image_path)
+    plt.close()
+    print(f"Visualization for {file_name} saved to {output_image_path}")
+\end{lstlisting}
 
 \end{document}
