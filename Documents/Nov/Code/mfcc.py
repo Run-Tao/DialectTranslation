@@ -22,14 +22,14 @@ for i in range(100):
 
     # 计算MFCC
     mfccs = librosa.feature.mfcc(y=data, sr=sample_rate, n_mfcc=13)
-
+    print(len(mfccs))
     # 生成输出文件路径
     output_file_path = os.path.join(output_folder, f"mfcc_{i}.npy")
 
     # 保存MFCC到文件
-    # np.save(output_file_path, mfccs)
+    np.save(output_file_path, mfccs)
 
-    print(f"MFCC for {file_name} saved to {output_file_path}")
+    # print(f"MFCC for {file_name} saved to {output_file_path}")
 
     # 可视化MFCC并保存图片
     plt.figure(figsize=(10, 4))
@@ -40,4 +40,4 @@ for i in range(100):
     output_image_path = os.path.join(output_folder, f"mfcc_{i}.png")
     plt.savefig(output_image_path)
     plt.close()
-    print(f"Visualization for {file_name} saved to {output_image_path}")
+    # print(f"Visualization for {file_name} saved to {output_image_path}")
