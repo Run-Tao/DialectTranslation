@@ -6,9 +6,11 @@
 \maketitle
 \begin{abstract}
 \end{abstract}
+\newpage
 \begin{center}
     \tableofcontents
 \end{center}
+\newpage
 \setcounter{section}{-1}
 \section{引言}
 随着普通话的推广，为了更好地与各族人民交流，方言的盛行注定会成为过去时。不过，各地迥异的方言是中华民族传承千年的瑰宝。以吴语为例：现如今普通话已经只剩下四个声调，即所谓的阴平、阳平、上声、去声，但是在古汉语中还有一个声调为入声，在古诗文的韵律中时常出现；如在浙江义乌话中，声调达到了10个。因为有入声，所以使用方言阅读古诗文能够接近古人在创作时的读音，相较于普通话更有韵味。若此般瑰宝失传，则是中华民族乃至世界的重大文化损失。
@@ -37,7 +39,7 @@
 \subsection{语音指令文本设计}
 
 将智能家居的语音指令按照不同的智能家具进行划分，按照各家具分配的指令数量如表\ref{tab:1}所示。
-\begin{table}[htbp]
+\begin{table}[h]
     \caption{表\label{tab:1} 智能家居语音指令数据库语音指令分配}\
     \begin{center}
         \begin{tabular}{ccc}
@@ -56,7 +58,7 @@
     \end{center}
 \end{table}
 
-各家具的指令覆盖了大部分可能出现的需求，具体可以参见附录A。
+各家具的指令覆盖了大部分可能出现的需求，具体可以参见附录\ref{appendix:A}。
 
 \subsection{语音数据增强}
 由于方言数据量少，而且质量不高，所以需要对语音数据进行增强，增加数据集容量，提高识别精度。
@@ -105,27 +107,39 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
     f_m = \sum_{k=0}^{n-1} x_k \cos [\frac{\pi}{n}m(k+\frac{1}{2})]
 \end{equation}
 
-本研究使用MFCCs对每条进行语音数据的特征提取，用于语音识别的声学模型中。
+本研究使用MFCCs对每条进行语音数据的特征提取，用于语音识别的声学模型中。将对一个音频信号$S(t)$求取MFCCs的操作定义为$MFCC(S(t))$，即有：
+\begin{equation}
+    M = MFCC(S(t))
+\end{equation}
 \subsection{主成分分析}
+\subsection{预测}
+现有普通话智能家居语音指令数据库，包含一系列语音音频数据$D_i(t)$, $i = 1, 2, \ldots, L$。
 
-形成特征向量$\bm{v} = (\bm{f}_1, \bm{f}_2, \ldots, \bm{f}_M)$，
-\section{}
-
+对$D_i(t), i\in \{1,2,\ldots, L\}$，有$M_i = MFCC(D_i(t))$
+有一条待预测的音频指令数据，记为$S_p(t)$，通过梅尔频率倒谱系数的计算，提取得到矩阵$M$，即：
 \begin{equation}
-    g(t)=\frac{4A_{\max}}{\pi}\sum_{n=1}^{\infty}\frac{\sin((2n-1)\omega t)}{2n-1}
+    M_p = MFCC(S_p(t))
 \end{equation}
 
-\begin{equation}
-    \cos \langle \bm{a},\bm{b} \rangle = \frac{\bm{a} \cdot \bm{b}}{|\bm{a}||\bm{b}|}
-\end{equation}
-傅里叶变换（FT）：
-\begin{equation}
-    F(k) = \int_{-\infty}^{\infty} f(x) e^{-2\pi i k x} \, dx
-\end{equation}
-STFT：
-MFCCs过程：
+通过主成分分析，
+......
+形成特征向量$\bm{v_p} = (f_1, f_2, f_3, \ldots, f_N)$，
 
+通过余弦定理可得$\bm{v_p}$与普通话数据库中数据的特征向量的夹角$\theta_{pi} = \langle \bm{v_p},\bm{v_i} \rangle, i \in \{1,2,\ldots, L\}$，即：
+\begin{equation}
+    \cos \langle \bm{v_p},\bm{v_i} \rangle = \frac{\bm{v_p} \cdot \bm{v_i}}{|\bm{v_p}||\bm{v_i}|}
+\end{equation}
+
+于是有：
+\begin{equation}
+    \theta_{min} = min(\theta_{pi}), i \in \{1,2,\ldots, L\}
+\end{equation}
+
+记$\theta_{pk} = \theta_{min}$, 则对应的普通话指令为$S_k(t)$。
+\section{结果与讨论}
+\section{结论}
 \section{参考文献}
 \appendix
 \section[A]{语音指令文本}
+\label{appendix:A}
 \end{document}
