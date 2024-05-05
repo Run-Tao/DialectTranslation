@@ -1,7 +1,11 @@
+%!TEX program = xelatex
+% 完整编译: xelatex -> biber/bibtex -> xelatex -> xelatex
 \documentclass[lang=cn,cite=super]{elegantpaper}
 \usepackage{bm,appendix,graphicx}
 \title{低成本普惠型智能家居方言指令转换器的研究}
 \author{陶理}
+\date{}
+
 \begin{document}
 \maketitle
 \begin{abstract}
@@ -15,7 +19,7 @@
 \section{引言}
 随着普通话的推广，为了更好地与各族人民交流，方言的盛行注定会成为过去时。不过，各地迥异的方言是中华民族传承千年的瑰宝。以吴语为例：现如今普通话已经只剩下四个声调，即所谓的阴平、阳平、上声、去声，但是在古汉语中还有一个声调为入声，在古诗文的韵律中时常出现；如在浙江义乌话中，声调达到了10个。因为有入声，所以使用方言阅读古诗文能够接近古人在创作时的读音，相较于普通话更有韵味。全中国共有约10种方言大类，如图\ref{fig:chinese-lanaguages-map}所示，其中包括吴语、粤语等.而各地区又有不同的发音、措辞上也有区别，如在浙江，由于丘陵地势，不同地域的交流不频繁，使得同属吴语系的发音天差地别。
 \begin{figure}[h]
-    \caption{\label{fig:chinese-lanaguages-map}中国主要方言分布地图}
+    \caption{\label{fig:chinese-lanaguages-map}主要方言分布地图}
     \centering
     \includegraphics[scale=0.2]{chinese-lanaguages-map.png}
 \end{figure}
@@ -164,6 +168,11 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 对于矩阵$M$，存在$M = U \cdot \Sigma \cdot V^T$，其中$U$是$M$的左奇异矩阵，$\Sigma$是$M$的对角矩阵，$V^T$是$M$的右奇异矩阵。其中，$\Sigma_{i,i}$为$M$的奇异值，降序排列。取奇异值排序的前$k$项，将原矩阵$M$的维度降为$k \times k$，即$M_{SVD}$。
 \subsection{映射}
 现有普通话智能家居语音指令数据集$A=\{S_{m_1}, S_{m_2}, \ldots, S_{m_L}\}$，其中$S_{m_i}$为第$i$条普通话语音指令数据；方言智能家居语音指令数据集$B=\{S_{d_1}, S_{d_2}, \ldots, S_{d_L}\}$，其中$S_{d_i}$为第$i$条方言语音指令数据；
+寻找方言集合$\mathbb{D}$ 与普通话集合$\mathbb{M}$的映射关系，即同一指令的方言语音特征矩阵$M_d$与普通话语音特征矩阵$M_m$之间的映射关系。寻找权重矩阵$\Omega_{D\rightarrow M}$，使其满足：
+\begin{equation}
+    M_m = \Omega_{\mathbb{D}\rightarrow  \mathbb{M}} \odot M_d
+\end{equation}
+对
 \subsection{预测}
 现有普通话智能家居语音指令数据库，包含一系列语音音频数据$D_i(t)$, $i = 1, 2, \ldots, L$。
 
@@ -171,19 +180,42 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 
 通过SVD分解降维得到$M_{SVD_i}$。
 
-有一条待预测的音频指令数据，记为$S_p(t)$，通过梅尔频率倒谱系数的计算，提取得到矩阵$M$，即：
+有一条待预测的音频指令数据，记为$S_p(t)$，通过梅尔频率倒谱系数的计算，提取得到矩阵$M_p$，即：
 \begin{equation}
     M_p = MFCC(S_p(t))
 \end{equation}
 
 进一步得到矩阵$M_{SVD_p}$。
 
-对于$M_{SVD_p}$和$M_{SVD_i}, i \in \{ 1,2,\ldots, L\}$, 计算对应行向量的余弦相似度。将即：
+通过映射过程，将符合方言特征的矩阵$M_{SVD_p}$转化为符合普通话特征的矩阵。
+
+\begin{align}
+    D_p = F(M_{SVD_p}) &= \Omega_{\mathbb{D}\rightarrow  \mathbb{M}} \odot M_{SVD_p} \\
+    &= \begin{bmatrix}
+        \omega_{1,1} & \omega_{1,2} & \cdots & \omega_{1,N} \\
+        \omega_{2,1} & \omega_{2,2} & \cdots & \omega_{2,N} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \omega_{L,1} & \omega_{L,2} & \cdots & \omega_{L,N}\\
+    \end{bmatrix} \odot \begin{bmatrix}
+        m_{1,1} & m_{1,2} & \cdots & m_{1,N} \\
+        m_{2,1} & m_{2,2} & \cdots & m_{2,N} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        m_{L,1} & m_{L,2} & \cdots & m_{L,N}\\
+    \end{bmatrix}\\
+    &= \begin{bmatrix}
+        \omega_{1,1}m_{1,1} & \omega_{1,1}m_{1,2} & \cdots & \omega_{1,1}m_{1,N} \\
+        \omega_{2,1}m_{2,1} & \omega_{2,1}m_{2,2} & \cdots & \omega_{2,1}m_{2,N} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \omega_{L,1}m_{L,1} & \omega_{L,1}m_{L,2} & \cdots & \omega_{L,1}m_{L,N}\\
+    \end{bmatrix}
+\end{align}
+
+对于$D_p$和$M_{SVD_i}, i \in \{ 1,2,\ldots, L\}$, 计算对应行向量的余弦相似度。将即：
 \begin{equation}
-    \theta_{pi_{j}} = \langle \bm{v_{p_j}},\bm{v_{i_j}} \rangle = \arccos \left( \frac{\bm{v_{p_j}} \cdot \bm{v_{i_j}}}{|\bm{v_{p_j}}||\bm{v_{i_j}}|} \right)
+    \cos \theta_{pi_{j}} = \cos \langle \bm{v_{p_j}},\bm{v_{i_j}} \rangle = \frac{\bm{v_{p_j}} \cdot \bm{v_{i_j}}}{|\bm{v_{p_j}}||\bm{v_{i_j}}|}
 \end{equation}
 
-其中，$\bm{v_{p_j}}$和$\bm{v_{i_j}}$分别为$M_{SVD_p}$和$M_{SVD_i}$的第$j$行。
+其中，$\bm{v_{p_j}}$和$\bm{v_{i_j}}$分别为$D_p$和$M_{SVD_i}$的第$j$行。
 
 当$\theta$越小，意味着两个向量之间的余弦相似度越大。因而：
 \begin{equation}
@@ -204,6 +236,29 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
         \end{tabular}
     \end{center}
 \end{table}
+映射
+\begin{align}
+    F(M) &= \Omega \odot M \\
+    &= \begin{bmatrix}
+        \omega_{1,1} & \omega_{1,2} & \cdots & \omega_{1,N} \\
+        \omega_{2,1} & \omega_{2,2} & \cdots & \omega_{2,N} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \omega_{L,1} & \omega_{L,2} & \cdots & \omega_{L,N}\\
+    \end{bmatrix} \odot \begin{bmatrix}
+        m_{1,1} & m_{1,2} & \cdots & m_{1,N} \\
+        m_{2,1} & m_{2,2} & \cdots & m_{2,N} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        m_{L,1} & m_{L,2} & \cdots & m_{L,N}\\
+    \end{bmatrix}\\
+    &= \begin{bmatrix}
+        \omega_{1,1}m_{1,1} & \omega_{1,1}m_{1,2} & \cdots & \omega_{1,1}m_{1,N} \\
+        \omega_{2,1}m_{2,1} & \omega_{2,1}m_{2,2} & \cdots & \omega_{2,1}m_{2,N} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \omega_{L,1}m_{L,1} & \omega_{L,1}m_{L,2} & \cdots & \omega_{L,1}m_{L,N}\\
+    \end{bmatrix}
+\end{align}
+\begin{equation}
+\end{equation}
 \section{参考文献}
 \appendix
 \section{语音指令文本}
