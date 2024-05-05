@@ -21,7 +21,7 @@
 \begin{figure}[h]
     \caption{\label{fig:chinese-lanaguages-map}主要方言分布地图}
     \centering
-    \includegraphics[scale=0.2]{chinese-lanaguages-map.png}
+    \includegraphics[scale=0.4]{chinese-lanaguages-map.png}
 \end{figure}
 
 方言的多样性也同样是方言在文化上重要性的体现。但是如今的方言正在高速消亡，多样性在飞速下降，特别是小众方言。沪剧、川剧、粤语歌曲等流行的艺术形式使得大方言得到了一定程度上的新生，而且如今讯飞科技等公司、组织也研发了此类大方言转换为人工智能的算法，并已经付诸实践。而小众方言在使用人群数量上无法与大方言相比，自然在被关注度上也无法与大方言争锋。但是在这些小众方言流行的地域上，新一代的年轻人同样大多都说普通话，若是没有进一步的保护措施，这类的小众方言将很快走下历史的舞台。早在2005年的11月，时任教育部语言文字信息管理司司长李宇明在接受《语言文字周报》采访时，他指出:“建立和谐的语言生活，首先要对语言多样性有充分的认识，要尊重各民族的方言，要尊重各种方言，包括尊重繁体字等历史上的文字，因为这些都是中华民族的宝贵财富。”
@@ -85,12 +85,13 @@
             \hline \hline
             $L$ & 指令数据条数\\
             $S_m(t)$ & 普通话语音指令数据\\
-            $S_d(t)$ & 方言语音指令数据\\
+            $S_d(t)$ & 目标方言语音指令数据\\
             $M_m(t)$ & 普通话语音指令数据的梅尔倒谱系数矩阵\\
-            $M_d(t)$ & 方言语音指令数据的梅尔倒谱系数矩阵\\
+            $M_d(t)$ & 目标方言语音指令数据的梅尔倒谱系数矩阵\\
+            $M_{SVD}$ & 梅尔倒谱矩阵$M$的SVD分解结果\\
             $\Delta t$ & 窗函数的时间间隔\\
             $\bm{v_m}$ & 普通话语音指令数据的特征向量\\
-            $\bm{v_d}$ & 方言语音指令数据的特征向量\\
+            $\bm{v_d}$ & 目标方言语音指令数据的特征向量\\
             $S_p(t)$ & 待预测的指令数据\\
             $M_p(t)$ & 待预测的指令数据的梅尔倒谱系数矩阵\\
             $\bm{v_p}$ & 待预测的指令数据的特征向量\\
@@ -157,7 +158,7 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 \subsection{数据降维}
 奇异值分解（Singular Value Decomposition, SVD）是矩阵分解的一种方法，是一种广泛应用的数据降维方法，通过计算出的奇异值自大到小排序，可以得出不同特征的重要程度。
 
-对于一个语音信号$S(t)$计算其梅尔频率倒谱系数，得到矩阵$M$，$M$包含时间序列上每个窗口的MFCCs特征向量，即：
+对于一个语音信号$S(t)$计算其梅尔频率倒谱系数，得到矩阵$M$，$M$，$M$以时间序列上每个窗口的MFCCs特征向量作为行向量，即：
 \begin{equation}
     M = 
     \begin{bmatrix}
@@ -226,9 +227,9 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 进一步得到矩阵$M_{SVD_p}$。
 
 通过映射过程，将符合方言特征的矩阵$M_{SVD_p}$转化为符合普通话特征的矩阵。
-
-\begin{align}
-    D_p &= F(M_{SVD_p}) = \Omega_{\mathbb{D}\rightarrow  \mathbb{M}} \odot M_{SVD_p} + E  \\
+\begin{equation}
+\begin{aligned}
+    D_p &= F(M_{SVD_p}) = \Omega_{\mathbb{D}\rightarrow  \mathbb{M}} \odot M_{SVD_p} + E_{\mathbb{D}\rightarrow \mathbb{M}} \\
     &= \begin{bmatrix}
         \omega_{1,1} & \omega_{1,2} & \cdots & \omega_{1,N} \\
         \omega_{2,1} & \omega_{2,2} & \cdots & \omega_{2,N} \\
@@ -251,8 +252,8 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
         \vdots & \vdots & \ddots & \vdots \\
         \omega_{L,1}m_{L,1}+\varepsilon_{L,1} & \omega_{L,2}m_{L,2}+\varepsilon_{L,2} & \cdots & \omega_{L,N}m_{L,N}+\varepsilon_{L,N}\\
     \end{bmatrix}
-\end{align}
-
+\end{aligned}
+\end{equation}
 对于$D_p$和$M_{SVD_i}, i \in \{ 1,2,\ldots, L\}$, 计算对应行向量的余弦相似度。将即：
 \begin{equation}
     \cos \theta_{pi_{j}} = \cos \langle \bm{v_{p_j}},\bm{v_{i_j}} \rangle = \frac{\bm{v_{p_j}} \cdot \bm{v_{i_j}}}{|\bm{v_{p_j}}||\bm{v_{i_j}}|}
@@ -267,9 +268,12 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 
 记$\overline{\theta_{pk}} = \theta_{min}$, 则对应的普通话指令为$S_k(t)$。
 \section{结果与讨论}
-
-
-\section{结论}
+\subsection{计算MFCC和SVD获得特征矩阵}
+以普通话数据库的计算为例：
+图表！！！可视化！！！
+\subsection{映射关系的寻找}
+出数据+寻找应该使用线性回归还是其他函数的拟合，讨论
+\subsection{转换准确率}
 \begin{table}[h]
     \caption{\label{tab:3} 转换准确率}\
     \begin{center}
@@ -279,6 +283,10 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
         \end{tabular}
     \end{center}
 \end{table}
+\subsection{讨论}
+
+\section{结论}
+
 \begin{equation}
 \end{equation}
 \section{参考文献}

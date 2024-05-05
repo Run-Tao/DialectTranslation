@@ -26,14 +26,14 @@ for i in range(100):
     mfccs = librosa.feature.mfcc(y=data, sr=sample_rate, n_mfcc=100)
     U, S, VT = np.linalg.svd(mfccs)
     # 选择保留的奇异值数量，即降维后的维度k
-    k = 2
+    k = 8
 
     # 构造降维后的矩阵
     # 我们只保留前k个奇异值，因此Sigma矩阵将是一个k x k的对角矩阵
     Sigma = np.diag(S[:k])
 
     # 降维后的矩阵A_k
-    A_k = U[:, :k].dot(Sigma).dot(VT[:k, :])
+    A_k = np.dot(U[:, :k], Sigma)
 
     print("降维后的矩阵A_k:")
     print(A_k)
@@ -51,13 +51,8 @@ for i in range(100):
     # print(f"MFCC for {file_name} saved to {output_file_path}")
 
     # 可视化MFCC并保存图片
-    '''plt.figure(figsize=(10, 4))
-    librosa.display.specshow(mfccs, x_axis='time')
-    plt.colorbar()
-    plt.title(f'MFCC for {file_name}')
-    plt.tight_layout()
-    output_image_path = os.path.join(output_folder, f"mfcc_{i}.png")
+    output_image_path = os.path.join(output_folder, f"SVD\SVD_{i}.png")
     plt.savefig(output_image_path)
-    plt.close()'''
+    plt.close()
     # print(f"Visualization for {file_name} saved to {output_image_path}")
 plt.show()
