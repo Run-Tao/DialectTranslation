@@ -77,7 +77,7 @@
 \section{语音识别方法}
 \subsection{字母定义}
 \begin{table}[h]
-    \caption{\label{tab:2} Notation}\
+    \caption{\label{tab:2} 研究中涉及的变量}\
     \begin{center}
         \begin{tabular}{cc}
             \hline
@@ -86,14 +86,17 @@
             $L$ & 指令数据条数\\
             $S_m(t)$ & 普通话语音指令数据\\
             $S_d(t)$ & 方言语音指令数据\\
-            $M_m(t)$ & 普通话语音指令数据的梅尔倒谱系数\\
-            $M_d(t)$ & 方言语音指令数据的梅尔倒谱系数\\
+            $M_m(t)$ & 普通话语音指令数据的梅尔倒谱系数矩阵\\
+            $M_d(t)$ & 方言语音指令数据的梅尔倒谱系数矩阵\\
+            $\Delta t$ & 窗函数的时间间隔\\
             $\bm{v_m}$ & 普通话语音指令数据的特征向量\\
             $\bm{v_d}$ & 方言语音指令数据的特征向量\\
             $S_p(t)$ & 待预测的指令数据\\
-            $M_p(t)$ & 待预测的指令数据的梅尔倒谱系数\\
+            $M_p(t)$ & 待预测的指令数据的梅尔倒谱系数矩阵\\
             $\bm{v_p}$ & 待预测的指令数据的特征向量\\
             $\theta$ & 待预测的指令数据与普通话指令数据的夹角\\
+            $\Omega$ & 目标方言映射到普通话的权重矩阵\\
+            $E$ & 目标方言映射到普通话的误差常数矩阵\\
             \hline
         \end{tabular}
     \end{center}
@@ -151,7 +154,7 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
         f_{[n-1\Delta t,n\Delta t]}
     \end{bmatrix}
 \end{equation}
-\subsection{奇异值分解}
+\subsection{数据降维}
 奇异值分解（Singular Value Decomposition, SVD）是矩阵分解的一种方法，是一种广泛应用的数据降维方法，通过计算出的奇异值自大到小排序，可以得出不同特征的重要程度。
 
 对于一个语音信号$S(t)$计算其梅尔频率倒谱系数，得到矩阵$M$，$M$包含时间序列上每个窗口的MFCCs特征向量，即：
@@ -167,12 +170,47 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 
 对于矩阵$M$，存在$M = U \cdot \Sigma \cdot V^T$，其中$U$是$M$的左奇异矩阵，$\Sigma$是$M$的对角矩阵，$V^T$是$M$的右奇异矩阵。其中，$\Sigma_{i,i}$为$M$的奇异值，降序排列。取奇异值排序的前$k$项，将原矩阵$M$的维度降为$k \times k$，即$M_{SVD}$。
 \subsection{映射}
-现有普通话智能家居语音指令数据集$A=\{S_{m_1}, S_{m_2}, \ldots, S_{m_L}\}$，其中$S_{m_i}$为第$i$条普通话语音指令数据；方言智能家居语音指令数据集$B=\{S_{d_1}, S_{d_2}, \ldots, S_{d_L}\}$，其中$S_{d_i}$为第$i$条方言语音指令数据；
-寻找方言集合$\mathbb{D}$ 与普通话集合$\mathbb{M}$的映射关系，即同一指令的方言语音特征矩阵$M_d$与普通话语音特征矩阵$M_m$之间的映射关系。寻找权重矩阵$\Omega_{D\rightarrow M}$，使其满足：
+现有普通话智能家居语音指令数据集$X=\{S_{m_1}, S_{m_2}, \ldots, S_{m_L}\}$，其中$S_{m_i}$为第$i$条普通话语音指令数据；方言智能家居语音指令数据集$Y=\{S_{d_1}, S_{d_2}, \ldots, S_{d_L}\}$，其中$S_{d_i}$为第$i$条方言语音指令数据；依次通过提取MFCCs特征值、SVD奇异值分解降维等步骤，可以得到普通话智能家居语音指令特征矩阵集$\mathbb{D} = \{ M_{m_1}, M_{m_2}, \ldots, M_{m_L}\}$和方言智能家居语音指令特征矩阵集$\mathbb{M} = \{ M_{d_1}, M_{d_2}, \ldots, M_{d_L}\}$。
+
+寻找方言集合$\mathbb{D}$ 与普通话集合$\mathbb{M}$的映射关系，即同一指令的方言语音特征矩阵$M_d$与普通话语音特征矩阵$M_m$之间的映射关系。寻找权重矩阵$\Omega_{\mathbb{D}\rightarrow \mathbb{M}}$，使其满足：
 \begin{equation}
-    M_m = \Omega_{\mathbb{D}\rightarrow  \mathbb{M}} \odot M_d
+    M_m = \Omega_{\mathbb{D}\rightarrow  \mathbb{M}} \odot M_d + E_{\mathbb{D}\rightarrow \mathbb {M}}
 \end{equation}
-对
+
+对$M_m$和$M_d$中的任意元素$m_{ij}$, 记在普通话语音指令数据集$A$中有数组$\mathbf{U}_{ij} = [m_{1_{ij}}, m_{2_{ij}}, \ldots, m_{L_{ij}}]$，方言语音指令数据集$B$中有数组$\mathbf{V}_{ij} = [d_{1_{ij}}, d_{2_{ij}}, \ldots, d_{L_{ij}}]$，$i \in \{ 1, 2, \ldots, L\}$，$j \in \{ 1, 2, \ldots, L\}$，其中，$m_{k_{ij}}$代表第$k$个矩阵$M_m$的第$i$行第$j$列元素，$d_{k_{ij}}$代表第$k$个矩阵$M_d$的第$i$行第$j$列元素。
+
+采用线性回归，以$\mathbf{V}_{ij}$作为自变量$x$，$\mathbf{U}_{ij}$作为因变量，使用最小二乘法拟合回归方程：
+\begin{equation}
+    \hat{y} = \beta_0 + \beta_1 x
+\end{equation}
+解得：
+\begin{equation}
+    \left\{ 
+    \begin{aligned}
+           \beta_1 &= \frac{\sum_{k=1}^{L} (\mathbf{V}_{{ij}_k}-\overline{\mathbf{V}_{ij}}) (\mathbf{U}_{{ij}_k}-\overline{\mathbf{U}_{ij}})}{\sum_{k=1}^{L} (\mathbf{V}_{{ij}_k}-\overline{\mathbf{V}_{ij}})^2}\\
+        \beta_0 &= \overline{\mathbf{U}_{ij}}-\beta_1 \overline{\mathbf{V}_{ij}}
+    \end{aligned}
+    \right.
+\end{equation}
+
+于是对于元素$(i,j)$，我们有$\omega_{ij} = \beta_1$, $\varepsilon_{ij} = \beta_0$.
+
+\begin{equation}
+    \Omega = \begin{bmatrix}
+        \omega_{11} & \omega_{12} & \cdots & \omega_{1N}\\
+        \omega_{21} & \omega_{22} & \cdots & \omega_{2N}\\
+        \vdots & \vdots & \ddots & \vdots \\
+        \omega_{L1} & \omega_{L2} & \cdots & \omega_{LN}
+    \end{bmatrix}, 
+    E = \begin{bmatrix}
+        \varepsilon_{11} & \varepsilon_{12} & \cdots & \varepsilon_{1N}\\
+        \varepsilon_{21} & \varepsilon_{22} & \cdots & \varepsilon_{2N}\\
+        \vdots & \vdots & \ddots & \vdots \\
+        \varepsilon_{L1} & \varepsilon_{L2} & \cdots & \varepsilon_{LN}
+    \end{bmatrix}
+\end{equation}
+
+
 \subsection{预测}
 现有普通话智能家居语音指令数据库，包含一系列语音音频数据$D_i(t)$, $i = 1, 2, \ldots, L$。
 
@@ -190,7 +228,7 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 通过映射过程，将符合方言特征的矩阵$M_{SVD_p}$转化为符合普通话特征的矩阵。
 
 \begin{align}
-    D_p = F(M_{SVD_p}) &= \Omega_{\mathbb{D}\rightarrow  \mathbb{M}} \odot M_{SVD_p} \\
+    D_p &= F(M_{SVD_p}) = \Omega_{\mathbb{D}\rightarrow  \mathbb{M}} \odot M_{SVD_p} + E  \\
     &= \begin{bmatrix}
         \omega_{1,1} & \omega_{1,2} & \cdots & \omega_{1,N} \\
         \omega_{2,1} & \omega_{2,2} & \cdots & \omega_{2,N} \\
@@ -201,12 +239,17 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
         m_{2,1} & m_{2,2} & \cdots & m_{2,N} \\
         \vdots & \vdots & \ddots & \vdots \\
         m_{L,1} & m_{L,2} & \cdots & m_{L,N}\\
+    \end{bmatrix} + \begin{bmatrix}
+        \varepsilon_{1,1} & \varepsilon_{1,2} & \cdots & \varepsilon_{1,N} \\
+        \varepsilon_{2,1} & \varepsilon_{2,2} & \cdots & \varepsilon_{2,N} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \varepsilon_{L,1} & \varepsilon_{L,2} & \cdots & \varepsilon_{L,N}\\
     \end{bmatrix}\\
     &= \begin{bmatrix}
-        \omega_{1,1}m_{1,1} & \omega_{1,1}m_{1,2} & \cdots & \omega_{1,1}m_{1,N} \\
-        \omega_{2,1}m_{2,1} & \omega_{2,1}m_{2,2} & \cdots & \omega_{2,1}m_{2,N} \\
+        \omega_{1,1}m_{1,1}+\varepsilon_{1,1} & \omega_{1,2}m_{1,2}+\varepsilon_{1,2} & \cdots & \omega_{1,N}m_{1,N}+\varepsilon_{1,N} \\
+        \omega_{2,1}m_{2,1}+\varepsilon_{2,1} & \omega_{2,2}m_{2,2}+\varepsilon_{2,2} & \cdots & \omega_{2,N}m_{2,N}+\varepsilon_{2,N} \\
         \vdots & \vdots & \ddots & \vdots \\
-        \omega_{L,1}m_{L,1} & \omega_{L,1}m_{L,2} & \cdots & \omega_{L,1}m_{L,N}\\
+        \omega_{L,1}m_{L,1}+\varepsilon_{L,1} & \omega_{L,2}m_{L,2}+\varepsilon_{L,2} & \cdots & \omega_{L,N}m_{L,N}+\varepsilon_{L,N}\\
     \end{bmatrix}
 \end{align}
 
@@ -219,10 +262,10 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 
 当$\theta$越小，意味着两个向量之间的余弦相似度越大。因而：
 \begin{equation}
-    \min ~~\bar{\theta} = \dfrac{1}{L} \sum_{j=1}^{L} \theta_{pi_{j}}, ~~i \in \{1,2,\ldots, L\}
+    \mathop{\min}_{i} ~~\overline{\theta} = \dfrac{1}{L} \sum_{j=1}^{L} \theta_{pi_{j}}, ~~i \in \{1,2,\ldots, L\}
 \end{equation}
 
-记$\bar{\theta_{pk}} = \theta_{min}$, 则对应的普通话指令为$S_k(t)$。
+记$\overline{\theta_{pk}} = \theta_{min}$, 则对应的普通话指令为$S_k(t)$。
 \section{结果与讨论}
 
 
@@ -230,33 +273,12 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
 \begin{table}[h]
     \caption{\label{tab:3} 转换准确率}\
     \begin{center}
-        \begin{tabular}{ccc}
+        \begin{tabular}{cc}
             \hline
             \hline
         \end{tabular}
     \end{center}
 \end{table}
-映射
-\begin{align}
-    F(M) &= \Omega \odot M \\
-    &= \begin{bmatrix}
-        \omega_{1,1} & \omega_{1,2} & \cdots & \omega_{1,N} \\
-        \omega_{2,1} & \omega_{2,2} & \cdots & \omega_{2,N} \\
-        \vdots & \vdots & \ddots & \vdots \\
-        \omega_{L,1} & \omega_{L,2} & \cdots & \omega_{L,N}\\
-    \end{bmatrix} \odot \begin{bmatrix}
-        m_{1,1} & m_{1,2} & \cdots & m_{1,N} \\
-        m_{2,1} & m_{2,2} & \cdots & m_{2,N} \\
-        \vdots & \vdots & \ddots & \vdots \\
-        m_{L,1} & m_{L,2} & \cdots & m_{L,N}\\
-    \end{bmatrix}\\
-    &= \begin{bmatrix}
-        \omega_{1,1}m_{1,1} & \omega_{1,1}m_{1,2} & \cdots & \omega_{1,1}m_{1,N} \\
-        \omega_{2,1}m_{2,1} & \omega_{2,1}m_{2,2} & \cdots & \omega_{2,1}m_{2,N} \\
-        \vdots & \vdots & \ddots & \vdots \\
-        \omega_{L,1}m_{L,1} & \omega_{L,1}m_{L,2} & \cdots & \omega_{L,1}m_{L,N}\\
-    \end{bmatrix}
-\end{align}
 \begin{equation}
 \end{equation}
 \section{参考文献}
