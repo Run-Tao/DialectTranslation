@@ -5,6 +5,29 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+def approximate_matrix(A, k):
+    """
+    计算矩阵A的秩为k的近似矩阵。
+
+    参数:
+    A -- 原始矩阵 (numpy.ndarray)
+    k -- 近似矩阵的秩 (int)
+
+    返回:
+    A_approx -- 近似矩阵 (numpy.ndarray)
+    """
+    # 对矩阵A进行奇异值分解
+    U, S, Vt = np.linalg.svd(A, full_matrices=False)
+    
+    # 保留前k个奇异值
+    S_k = np.diag(S[:k])
+    
+    # 计算近似矩阵
+    A_approx = U[:, :k] @ S_k @ Vt[:k, :]
+    
+    return A_approx
+
+
 # 指定输入和输出文件夹路径
 input_folder = r'D:\TaoLi\Projects\DialectTranslation\Data\mandarin\audio\GeneratedByAI'
 output_folder = r'D:\TaoLi\Projects\DialectTranslation\Data\mandarin\MFCC'
@@ -24,16 +47,8 @@ for i in range(100):
 
     # 计算MFCC
     mfccs = librosa.feature.mfcc(y=data, sr=sample_rate, n_mfcc=100)
-    U, S, VT = np.linalg.svd(mfccs)
-    # 选择保留的奇异值数量，即降维后的维度k
-    k = 8
-
-    # 构造降维后的矩阵
-    # 我们只保留前k个奇异值，因此Sigma矩阵将是一个k x k的对角矩阵
-    Sigma = np.diag(S[:k])
-
-    # 降维后的矩阵A_k
-    A_k = np.dot(U[:, :k], Sigma)
+    
+    A_k = approximate_matrix(mfccs, 6)
 
     print("降维后的矩阵A_k:")
     print(A_k)
