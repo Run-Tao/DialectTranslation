@@ -30,6 +30,8 @@
 *.fdb_latexmk
 *.pyc
 *.tmp
+*.nav
+*.snm
 tempCodeRunnerFile.py
 /.idea
 /.vscode

@@ -66,7 +66,11 @@ for i in range(100):
     # print(f"MFCC for {file_name} saved to {output_file_path}")
 
     # 可视化MFCC并保存图片
-    output_image_path = os.path.join(output_folder, f"SVD\SVD_{i}.png")
+    plt.figure(figsize=(16, 10))
+    librosa.display.specshow(mfccs, sr=sample_rate, x_axis='time',cmap='bwr')
+    plt.colorbar()
+    plt.title(f"MFCC for {file_name}")
+    output_image_path = os.path.join(output_folder, f"mfcc_{i}.png")
     plt.savefig(output_image_path)
     plt.close()
     # print(f"Visualization for {file_name} saved to {output_image_path}")
