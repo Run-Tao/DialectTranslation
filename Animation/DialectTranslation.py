@@ -92,6 +92,7 @@ class DialectTranslation(Scene):
         self.wait(2)
 
         MFCCS_full = Text("Full name: Multi-Frequency Cepstral Coefficients", font="Times New Roman", font_size=16).next_to(method_MFCCs, RIGHT)
+        
         SVD_full = Text("Full name: Singular Value Decomposition", font="Times New Roman", font_size=16).next_to(method_SVD, RIGHT)
         MAP_explanation = Text("Using Cosine Distance and Linear Regression to find a map for dialects", font="Times New Roman", font_size=16).next_to(method_Map, RIGHT)
         # 遗留问题 动画没做好
