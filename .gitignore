@@ -32,6 +32,7 @@
 *.tmp
 *.nav
 *.snm
+*.xml
 tempCodeRunnerFile.py
 /.idea
 /.vscode

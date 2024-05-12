@@ -30,7 +30,11 @@ for command in commands:
 length = [len(commands_by_length[i]) for i in range(len(commands_by_length))]
 
 x = np.arange(1, len(commands_by_length) + 1)
-
-plt.bar(x, length,cmap='viridis')
+plt.rcParams['font.family'] = ['Times New Roman']
+plt.bar(x, length, color="#E45B2E")
+plt.xlabel("Order Length")
+plt.ylabel("Number")
+plt.savefig("Paper/orders_classification.png",dpi=300)
 plt.show()
+print(length)
 print(commands_by_length)
