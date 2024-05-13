@@ -2,6 +2,21 @@ from manimlib import *
 
 class TOPSIS(Scene):
     def construct(self):
+        title = Text("Formula Explanation", font="Times New Roman", font_size=32).to_edge(UP)
+        self.play(Write(title))
+        self.wait(2)
+
+        Gini = Text("Gini Importance", font="Times New Roman", font_size = 20).next_to(title, DOWN)
+        Gini.to_edge(LEFT)
+        self.play(Write(Gini))
+
+        Gini_equation = Tex("1-\sum_{i=1}^{C_v} p_i^2", font_size = 28).next_to(Gini, RIGHT)
+
+        self.play(Write(Gini_equation))
+
+        self.play(FadeOut(title),FadeOut(Gini), FadeOut(Gini_equation))
+
+
         title = Text("TOPSIS",font="Times New Roman", font_size=32).to_edge(UP)
         self.play(Write(title))
 
@@ -63,7 +78,9 @@ class TOPSIS(Scene):
         
         self.play(Transform(Distance,Equation_1))
 
-        self.play(Transform(Equation_1, Equation_1.shift(RIGHT*3)), FadeOut(Equation_1))
+        Equation_1_copy = Equation_1.copy().shift(RIGHT*3)
+        Equation_1.move_to(Equation_1_copy)
+        self.play(ReplacementTransform(Distance,Equation_1_copy),)
         self.wait(1)
 
         TwoDimension = Text("Two Dimension", font="Times New Roman", font_size=16).to_corner(UL, buff = 0.5)
@@ -71,29 +88,19 @@ class TOPSIS(Scene):
         self.play(Write(TwoDimension))
         self.wait(1)
         MultipleDimensions = Text("Multi-Dimensions", font="Times New Roman", font_size=16).next_to(TwoDimension, DOWN, buff = 0.5)
+        MultipleDimensions.shift(DOWN*0.9)
 
         self.play(Write(MultipleDimensions))
 
-        '''Equation_1_copy = Equation_1.copy()
-        self.play(Transform(Distance,Equation_1))
         self.wait(1)
 
-        TwoDimension = Text("Two Dimension", font="Times New Roman", font_size=16).to_corner(UL, buff = 0.5)'''
 
-        '''MultipleDimensions = Text("Multi-Dimensions", font="Times New Roman", font_size=16).next_to(TwoDimension, DOWN, buff = 0.5)
-
-        self.play(Transform(Equation_1_copy, Equation_1.copy().shift(RIGHT*3), rate_func=smooth), FadeOut(Equation_1))
-
-        self.play(Write(TwoDimension))
-
-        self.wait(1)
-        self.play(Write(MultipleDimensions))'''
 
         DownArrow = Tex("\Downarrow").next_to(Equation_1, DOWN)
 
         self.play(GrowFromPoint(DownArrow, Equation_1.get_center()))
         Equation_2 = Tex("D_n = \sqrt{\sum_{i=1}^n(x_i-x_j)^2+(y_i-y_j)^2}", font_size=28).next_to(DownArrow, DOWN)
-        self.play()
+        self.play(Write(Equation_2))
         self.wait(1)
 
 if __name__ == "__main__":
