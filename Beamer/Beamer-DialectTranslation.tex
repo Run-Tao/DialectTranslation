@@ -2,6 +2,7 @@
 \usepackage{ctex}
 \usepackage[english]{babel}
 \usepackage{natbib}
+\usefonttheme[onlymath]{serif}
 \bibliographystyle{plain}
 \usetheme{CambridgeUS} 
 \usecolortheme{seahorse}
@@ -28,6 +29,23 @@
 \section{研究方法及过程}
 \subsection{研究方法}
 \begin{frame}{研究方法}
+    \begin{enumerate}
+        \item MFCCs (梅尔频率倒谱系数)
+        \item SVD (奇异值分解)
+        \item OLS (最小二乘法)
+        \item 回归算法
+    \end{enumerate}
+\end{frame}
+\subsection{梅尔频率倒谱系数}
+\begin{frame}{梅尔频率倒谱系数}
+    Mel刻度，反映人耳对频率的感知:
+    \begin{equation}
+        Mel(f) = 2595 \log_{10}(1+f/700)
+    \end{equation}
+    加窗，目的为消除边界干扰:
+    \begin{equation}
+        w(n) = H(n) = 0.54 - 0.46 \cos \left( \frac{2\pi n}{N-1} \right)
+    \end{equation}
 \end{frame}
 \subsection{研究过程}
 \begin{frame}{研究过程}
