@@ -60,7 +60,6 @@ class DialectTranslation(Scene):
         origingroup.move_to(ORIGIN)
 
         # 创建移动动画
-        
 
         group_2 = VGroup(right_axes, right_dots)
         group_2_copy = group_2.copy()
@@ -73,6 +72,7 @@ class DialectTranslation(Scene):
         self.play(ReplacementTransform(group_blueyellow,group_blueyellow_copy))
         self.wait(2)
         # 若有空，做一个蓝色点平移到黄色点上的视频，以体现映射效果
+        
 
         self.play(*[FadeOut(mob) for mob in self.mobjects])
 

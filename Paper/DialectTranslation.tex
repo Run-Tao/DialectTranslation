@@ -70,15 +70,23 @@
     \begin{center}
         \begin{tabular}{ccc}
             \toprule
-            \textbf{智能家具} & \textbf{指令数量} & \textbf{例子} \\
+            \textbf{指令种类} & \textbf{指令数量} & \textbf{例子} \\
             \midrule
-            \textit{空调} & 30 & 打开空调 \\
-            \textit{照明} & 25 & 开灯 \\
-            \textit{电视} & 18 & 打开电视、调低电视音量 \\
-            \textit{电风扇} & 15 & 电风扇调到三档风 \\
-            \textit{洗衣机} & 10 & 洗衣机开始工作 \\
-            \textit{摄像头} & 8 & 查看门口摄像头画面 \\
-            \textit{音响} & 3 & 播放\\
+            \textit{空调} & 19 & 打开空调、制冷、制热 \\
+            \textit{门窗} & 13 & 开门、打开窗帘 \\
+            \textit{照明} & 10 & 开灯、调亮灯光 \\
+            \textit{风扇} & 10 & 开电风扇、一档风速 \\
+            \textit{洗碗机} & 8 & 打开洗碗机 \\
+            \textit{烘干机} & 8 & 打开烘干机 \\
+            \textit{洗衣机} & 8 & 打开洗衣机 \\
+            \textit{烤箱} & 8 & 设置烤箱温度 \\
+            \textit{微波炉} & 7 & 打开微波炉\\
+            \textit{热水壶} & 5 & 打开热水壶 \\
+            \textit{热水器} & 4 & 开热水器 \\
+            \textit{安防} & 11 & 打开防盗门 \\
+            \textit{预定} & 18 & 预定洗衣机时间\\
+            \textit{定时} & 7 & 一小时 \\
+            \textit{其他} & 15 & 扫地机器人开始工作 \\
             \bottomrule
         \end{tabular}
     \end{center}
@@ -120,7 +128,7 @@
     $S_d(t)$ & 目标方言语音指令数据 & Signal\\
     $M_m(t)$ & 普通话语音指令数据的梅尔倒谱系数矩阵 & Matrix\\
     $M_d(t)$ & 目标方言语音指令数据的梅尔倒谱系数矩阵 & Matrix\\
-    $M_{SVD}$ & 梅尔倒谱矩阵$M$的SVD分解结果 & Matrix\\
+    $M_{SVD}$ & 梅尔倒谱矩阵$M$的SVD降维结果矩阵 & Matrix\\
     $\Delta t$ & 窗函数的时间间隔 & Float\\
     $\bm{v_m}$ & 普通话语音指令数据的特征向量 & Vector\\
     $\bm{v_d}$ & 目标方言语音指令数据的特征向量 & Vector\\
@@ -384,12 +392,11 @@ MFCCs的计算分为：预加重、加窗、短时傅里叶变换、计算功率
     \item 未来收集更多方面的数据，加强模型的鲁棒性
     \item 设计了一个方言语音指令转换器，应用于实际生活，帮助方言使用者打破语言障碍，更好地利用语音识别系统来控制智能家居设备。 
 \end{enumerate}
-\section*{致谢}
-\addcontentsline{toc}{section}{致谢}
 \newpage
 \section*{参考文献}
 \addcontentsline{toc}{section}{参考文献}
 \bibliography{D:\\TaoLi\\Projects\\DialectTranslation\\Paper\\References}
+\newpage
 \appendix
 \section{语音指令文本}
 \label{appendix:A}
