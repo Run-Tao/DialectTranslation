@@ -1,36 +1,32 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-commands = [
-    "开门", "开灯", "关门", "关灯", "开空调", "关空调", "一档风", "二档风", "三档风",
-    "静音", "睡眠", "制冷", "制热", "升温", "降温", "开电风扇", "关电风扇", "摇头", "停止摇头",
-    "扫地机器人开始工作", "开热水器", "关热水器", "打开热水壶", "关闭热水壶", "设置热水壶温度",
-    "打开烤箱", "关闭烤箱", "设置烤箱温度", "打开微波炉", "关闭微波炉", "设置微波炉加热时间",
-    "打开洗碗机", "关闭洗碗机", "启动洗碗机清洗", "取消洗碗机清洗", "打开洗衣机", "关闭洗衣机",
-    "启动洗衣机洗涤", "取消洗衣机洗涤", "打开烘干机", "关闭烘干机", "启动烘干机烘干", "取消烘干机烘干",
-    "调整家居设备亮度", "切换家居设备颜色", "控制智能插座连接设备", "调整窗户开启程度", "打开新风系统",
-    "关闭新风系统", "调整新风系统风速", "打开除湿器", "关闭除湿器", "调整除湿器湿度", "打开空气净化器",
-    "关闭空气净化器", "调整空气净化器模式", "打开地暖", "关闭地暖", "调整地暖温度", "打开窗帘",
-    "关闭窗帘", "调整窗帘开合程度", "打开门窗传感器", "关闭门窗传感器", "检查门窗状态", "打开烟雾报警器",
-    "关闭烟雾报警器", "检查烟雾报警器状态", "打开门铃摄像头", "关闭门铃摄像头", "查看摄像头画面",
-    "控制安防摄像头开始录像", "控制安防摄像头停止录像", "查看录像回放", "打开防盗传感器", "关闭防盗传感器",
-    "预定空调时间", "预定洗衣机时间", "预定微波炉时间", "预定烤箱时间", "预定洗碗机时间",
-    "预定烘干机时间", "预定冰箱时间", "预定空气净化器时间", "预定扫地机器人时间", "预定电视时间",
-    "预定热水器时间", "预定窗帘时间", "预定智能插座时间", "预定音响时间", "预定除湿器时间",
-    "预定加湿器时间", "预定电动窗时间", "预定智能锁时间", "一小时", "两小时", "三小时",
-    "四小时", "半小时", "十分钟", "一天"
+# 数据
+commands = ['开门', '开灯', '开电风扇', '三小时', '预定洗碗机时间']
+dialects = ['沪语', '四川话', '浙江义乌话']
+probabilities = [
+    [[76.8, 15.4, 4.6], [82.8, 7.4, 4.6], [70.2, 18.7, 2.4]],
+    [[66.5, 25.8, 0.8], [83.9, 6.1, 0.8], [72.2, 17.8, 0.8]],
+    [[69.7, 26.2, 1.5], [88.3, 8.2, 0.6], [70.0, 19.0, 0.6]],
+    [[62.5, 30.0, 1.1], [89, 9, 0.1], [70.4, 15.2, 8.6]],
+    [[52.5, 46.5, 0.5], [93.3, 6.2, 0.2], [70.1, 14.3, 2.4]]
 ]
 
-commands_by_length = [ [], [], [], [], [], [], [], [], [], [], []]
+# 橙色渐变
+colors = plt.cm.Oranges(np.linspace(0, 1, len(dialects) + 1))
 
-for command in commands:
-    length = len(command)
-    commands_by_length[length-1].append(command)
+# 绘图
+fig, axs = plt.subplots(len(commands), 1, figsize=(10, 20), sharex=True)
 
-length = [len(commands_by_length[i]) for i in range(len(commands_by_length))]
+for i, command in enumerate(commands):
+    ax = axs[i]
+    ax.set_title(command)
+    x = range(len(dialects))
+    for j, dialect in enumerate(dialects):
+        ax.bar(j, probabilities[i][0][j], color=colors[j], width=0.2, align='center', label=dialect)
+    ax.set_xticks(x)
+    ax.set_xticklabels(dialects)
+    ax.legend()
 
-x = np.arange(1, len(commands_by_length) + 1)
-
-plt.bar(x, length,cmap='viridis')
+plt.tight_layout()
 plt.show()
-print(commands_by_length)
